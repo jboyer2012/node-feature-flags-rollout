@@ -2,6 +2,7 @@
 var express    = require('express'),
     app        = express(),
     bodyParser = require('body-parser'),
+    path = require('path'),
     routes = require('./app/bank'),
     mongoose = require('mongoose'),
     Account = require('./app/data/AccountModel'),
@@ -12,7 +13,8 @@ var express    = require('express'),
 // configure app to use bodyParser()
 // this will let us get the data from a POST
 app.use(bodyParser.urlencoded({ extended: true }))
-app.use(bodyParser.json())
+app.use(bodyParser.json());
+app.use(express.static(path.resolve('client/')));
 
 var port = process.env.PORT || 3000
 
