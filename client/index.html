@@ -5,11 +5,72 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Banker API</title>
-    <link href="../node_modules/bootstrap/dist/css/bootstrap.css" rel="stylesheet">
+    <link href="bootstrap.css" rel="stylesheet">
   </head>
   <body>
-    
-    <script src="../node_modules/jquery/dist/jquery.min.js"></script>
-    <script src="../node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
+    <div class="row">
+      <div class="col-xs-12 col-md-3"><button id="balance-btn" type="button" class="btn btn-success">What's my balance?</button></div>
+      <div class="col-xs-12 col-md-3"><button id="withdraw-btn" type="button" class="btn btn-success">Withdraw $500</button></div>
+      <div class="col-xs-12 col-md-3"><button id="deposit-btn" type="button" class="invisible btn btn-success">Deposit $200</button></div>
+    </div>
+    <script src="jquery.min.js"></script>
+    <script src="bootstrap.min.js"></script>
+    <script src="rox-browser.js"></script>
+    <script type="text/javascript">
+      jQuery(document).ready(function($){
+        var APIKey;
+        const bankerClientFlags = {
+          depositTurnedOn: new Rox.Flag()
+        }
+        $.ajax({
+           url: "http://localhost:3000/banker/config",
+           method: "GET",
+           success: function(data){
+              APIKey = data.clientRoxAPIKey;
+              Rox.register('BankerFlags', bankerClientFlags)
+              Rox.setup(APIKey);
+              console.log(bankerClientFlags.depositTurnedOn.isEnabled());
+              if(bankerClientFlags.depositTurnedOn.isEnabled()) {
+                $('#deposit-btn').removeClass('invisible');
+              }
+           }
+         });
+         //Rox.showOverrides();
+         
+
+       $('#balance-btn').click(function(){
+         $.ajax({
+           url: "http://localhost:3000/banker/account/123456",
+           method: "GET",
+           success: function(data){
+             alert(data.accountBalance);
+           }
+         });
+       });
+       $('#withdraw-btn').click(function(){
+         $.ajax({
+           url: "http://localhost:3000/banker/withdraw",
+           method: "POST",
+           success: function(data){
+             alert(data.newBalance);
+           }
+         });
+       });
+
+       $('#deposit-btn').click(function(){
+         $.ajax({
+           url: "http://localhost:3000/banker/deposit",
+           method: "POST",
+           success: function(data){
+             alert(data.newBalance);
+           },
+           error: function(){
+             alert("Deposit is not on");
+           }
+         });
+       });
+});
+     
+     </script>
   </body>
 </html>
